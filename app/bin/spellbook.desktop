@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=0.3
+Type=Application
+Name=Spellbook
+GenericName=Dictionary
+Comment=A platform independent dictionary written in Java
+TryExec=spellbook
+Exec=spellbook
+Icon=spellbook.png
+MimeType=application/x-shellscript;
+Terminal=false
+Categories=Application;Utility;TextEditor;X-Red-Hat-Base;
+Encoding=UTF-8

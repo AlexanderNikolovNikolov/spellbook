@@ -1,0 +1,569 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+    <changeSet id="1" author="bozhidar">
+        <createTable tableName="DICTIONARIES">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="modified" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="created" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="from_language" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="to_language" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="icon_small" type="varbinary">
+                <constraints nullable="false"/>
+            </column>
+            <column name="icon_big" type="varbinary">
+                <constraints nullable="false"/>
+            </column>
+            <column name="special" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="DICTIONARY_ENTRIES">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="modified" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="created" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="word" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="word_translation" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_by_user" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="dictionary_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="RANK_ENTRIES">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="modified" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="created" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="word" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rank" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="word_language" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex tableName="DICTIONARY_ENTRIES" indexName="idx_de_word">
+            <column name="word"/>
+        </createIndex>
+        <createIndex tableName="RANK_ENTRIES" indexName="idx_re_word">
+            <column name="word"/>
+        </createIndex>
+        <createIndex tableName="DICTIONARY_ENTRIES" indexName="idx_de_updated_by_user">
+            <column name="updated_by_user"/>
+        </createIndex>
+
+        <createTable tableName="EXAM_SCORE_ENTRIES">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total_words" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="correct_words" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="difficulty" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="created" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="from_lang" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="to_lang" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="SYNC_STATS">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="pulled_entries" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="pushed_entries" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="created" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="STUDY_SETS">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="modified" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="created" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="STUDY_ENTRIES">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="modified" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="created" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="dictionary_entry_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STUDY_SET_ID" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="2" author="alexander">
+        <addColumn tableName="STUDY_SETS">
+            <column name="dictionary_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="3" author="alexander">
+        <sql splitStatements="false">
+            insert into STUDY_SETS(ID, MODIFIED, CREATED, NAME, DICTIONARY_ID)
+            values('1', NULL, '2010-08-24', 'Animals', select id from DICTIONARIES where name = 'English-Bulgarian'),
+            ('2', NULL, '2010-08-24', 'Clothes', select id from DICTIONARIES where name = 'English-Bulgarian'),
+            ('3', NULL, '2010-08-24', 'Colors', select id from DICTIONARIES where name = 'English-Bulgarian'),
+            ('4', NULL, '2010-08-24', 'Fruits', select id from DICTIONARIES where name = 'English-Bulgarian'),
+            ('5', NULL, '2010-08-24', 'In the kitchen', select id from DICTIONARIES where name = 'English-Bulgarian'),
+            ('6', NULL, '2010-08-24', 'In the room', select id from DICTIONARIES where name = 'English-Bulgarian'),
+            ('7', NULL, '2010-08-24', 'Months', select id from DICTIONARIES where name = 'English-Bulgarian'),
+            ('8', NULL, '2010-08-24', 'Movement', select id from DICTIONARIES where name = 'English-Bulgarian'),
+            ('9', NULL, '2010-08-24', 'Musical instruments', select id from DICTIONARIES where name = 'English-Bulgarian'),
+            ('10', NULL, '2010-08-24', 'Numbers', select id from DICTIONARIES where name = 'English-Bulgarian'),
+            ('11', NULL, '2010-08-24', 'Professions', select id from DICTIONARIES where name = 'English-Bulgarian'),
+            ('12', NULL, '2010-08-24', 'Sizes', select id from DICTIONARIES where name = 'English-Bulgarian'),
+            ('13', NULL, '2010-08-24', 'The family tree', select id from DICTIONARIES where name = 'English-Bulgarian'),
+            ('14', NULL, '2010-08-24', 'Tools', select id from DICTIONARIES where name = 'English-Bulgarian'),
+            ('15', NULL, '2010-08-24', 'Vegetables', select id from DICTIONARIES where name = 'English-Bulgarian');
+
+            insert into STUDY_ENTRIES(ID, MODIFIED, CREATED, DICTIONARY_ENTRY_ID, STUDY_SET_ID)
+            values('1', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'lion' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('2', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'hyena' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('3', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'zebra' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('4', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'hippopotamus' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('5', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'elephant' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('6', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'rhinoceros' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('7', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'jaguar' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('8', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'leopard' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('9', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'crocodile' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('10', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'monkey' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('11', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'giraffe' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('12', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'bison' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('13', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'antelope' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('14', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'parrot' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('15', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'tiger' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('16', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'bear' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('17', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'squirrel' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('18', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'snake' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('19', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'lizard' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('20', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'spider' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('21', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'scorpion' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('22', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'bird' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('23', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'raven' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('24', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'magpie' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('25', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'woodpecker' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('26', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'pigeon' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('27', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'sparrow' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('28', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'hawk' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('29', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'eagle' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('30', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'vulture' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('31', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'tortoise' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('32', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'dog' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('33', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'cat' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('34', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'mouse' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('35', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'horse' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('36', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'cow' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('37', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'pig' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('38', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'goat' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('39', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'sheep' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('40', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'hen' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('41', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'cock' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('42', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'chicken' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('43', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'duck' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('44', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'turkey' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('45', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'wolf' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('46', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'fox' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('47', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'jackal' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('48', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'badger' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('49', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'skunk' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('50', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'polecat' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('51', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'deer' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('52', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'buffalo' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('53', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'fish' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('54', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'shark' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('55', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'whale' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('56', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'dolphin' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('57', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'carp' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('58', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'pike' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('59', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'octopus' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('60', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'peacock' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+            ('61', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'pheasant' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 1),
+
+            ('62', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'shirt' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 2),
+            ('63', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'trousers' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 2),
+            ('64', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'parka' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 2),
+            ('65', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'dress' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 2),
+            ('66', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'skirt' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 2),
+            ('67', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'tights' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 2),
+            ('68', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'jacket' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 2),
+            ('69', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'undershirt' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 2),
+            ('70', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'underpants' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 2),
+            ('71', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'boot' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 2),
+            ('72', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'slipper' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 2),
+            ('73', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'sock' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 2),
+            ('74', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'coat' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 2),
+            ('75', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'sweater' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 2),
+            ('76', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'sandal' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 2),
+            ('77', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'shoe' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 2),
+            ('78', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'hat' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 2),
+            ('79', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'bonnet' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 2),
+            ('80', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'cap' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 2),
+            ('81', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'blouse' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 2),
+            ('82', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'blazer' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 2),
+            ('83', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'kerchief' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 2),
+
+            ('84', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'red' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 3),
+            ('85', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'blue' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 3),
+            ('86', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'yellow' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 3),
+            ('87', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'green' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 3),
+            ('88', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'orange' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 3),
+            ('89', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'purple' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 3),
+            ('90', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'brown' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 3),
+            ('91', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'silver' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 3),
+            ('92', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'black' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 3),
+            ('93', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'white' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 3),
+            ('94', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'grey' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 3),
+
+            ('95', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'banana' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 4),
+            ('96', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'apple' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 4),
+            ('97', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'pear' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 4),
+            ('98', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'melon' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 4),
+            ('99', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'strawberry' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 4),
+            ('100', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'raspberry' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 4),
+            ('101', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'whortleberry' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 4),
+            ('102', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'quince' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 4),
+            ('103', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'plum' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 4),
+            ('104', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'peach' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 4),
+            ('105', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'apricot' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 4),
+            ('106', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'orange' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 4),
+            ('107', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'pineapple' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 4),
+            ('108', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'grape' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 4),
+            ('109', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'lemon' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 4),
+            ('110', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'pomegranate' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 4),
+
+            ('111', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'chair' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 5),
+            ('112', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'table' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 5),
+            ('113', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'spoon' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 5),
+            ('114', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'fork' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 5),
+            ('115', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'plate' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 5),
+            ('116', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'pot' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 5),
+            ('117', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'frying pan' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 5),
+            ('118', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'stove' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 5),
+            ('119', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'hot plate' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 5),
+            ('120', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'glass' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 5),
+            ('121', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'knife' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 5),
+            ('122', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'pan' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 5),
+            ('123', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'tray' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 5),
+            ('124', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'ladle' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 5),
+            ('125', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'mixer' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 5),
+            ('126', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'bowl' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 5),
+            ('127', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'dish' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 5),
+            ('128', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'trash-can' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 5),
+            ('129', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'cloth' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 5),
+            ('130', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'brush' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 5),
+            ('131', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'sugar' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 5),
+            ('132', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'salt' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 5),
+            ('133', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'seasoning' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 5),
+
+            ('134', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'telly' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 6),
+            ('135', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'computer' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 6),
+            ('136', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'lounge' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 6),
+            ('137', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'chair' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 6),
+            ('138', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'table' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 6),
+            ('139', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'lamp' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 6),
+            ('140', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'bureau' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 6),
+            ('141', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'bedstead' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 6),
+            ('142', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'wardrobe' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 6),
+            ('143', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'telephone' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 6),
+            ('144', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'sofa' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 6),
+            ('145', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'picture' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 6),
+            ('146', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'ventilator' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 6),
+            ('147', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'stove' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 6),
+            ('148', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'cupboard' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 6),
+            ('149', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'hanger' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 6),
+            ('150', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'carpet' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 6),
+            ('151', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'window' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 6),
+            ('152', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'flower' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 6),
+            ('153', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'vase' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 6),
+            ('154', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'aquarium' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 6),
+            ('155', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'flowerpot' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 6),
+            ('156', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'plug' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 6),
+            ('157', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'perfume' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 6),
+            ('158', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'persiennes' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 6),
+            ('159', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'book' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 6),
+
+            ('160', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'January' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 7),
+            ('161', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'February' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 7),
+            ('162', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'march' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 7),
+            ('163', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'April' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 7),
+            ('164', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'may' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 7),
+            ('165', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'June' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 7),
+            ('166', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'July' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 7),
+            ('167', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'august' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 7),
+            ('168', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'September' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 7),
+            ('169', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'October' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 7),
+            ('170', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'November' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 7),
+            ('171', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'December' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 7),
+
+            ('172', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'stand' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 8),
+            ('173', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'sit' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 8),
+            ('174', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'lie' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 8),
+            ('175', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'stretch' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 8),
+            ('176', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'hop' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 8),
+            ('177', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'skip' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 8),
+            ('178', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'jump' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 8),
+            ('179', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'look' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 8),
+            ('180', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'walk' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 8),
+            ('181', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'run' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 8),
+            ('182', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'leap' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 8),
+            ('183', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'kneel' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 8),
+            ('184', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'crouch' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 8),
+            ('185', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'throw' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 8),
+            ('186', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'catch' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 8),
+            ('187', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'climb' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 8),
+            ('188', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'fall' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 8),
+            ('189', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'swing' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 8),
+            ('190', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'crawl' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 8),
+            ('191', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'kick' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 8),
+            ('192', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'pull' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 8),
+            ('193', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'hit' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 8),
+            ('194', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'dive' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 8),
+            ('195', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'swim' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 8),
+            ('196', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'dance' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 8),
+            ('197', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'twirl' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 8),
+            ('198', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'float' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 8),
+
+            ('199', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'harmonica' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 9),
+            ('200', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'saxophone' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 9),
+            ('201', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'piano' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 9),
+            ('202', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'cymbal' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 9),
+            ('203', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'trombone' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 9),
+            ('204', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'bassoon' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 9),
+            ('205', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'piccolo' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 9),
+            ('206', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'violin' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 9),
+            ('207', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'clarinet' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 9),
+            ('208', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'oboe' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 9),
+            ('209', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'recorder' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 9),
+            ('210', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'double bass' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 9),
+            ('211', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'trumpet' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 9),
+            ('212', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'french horn' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 9),
+            ('213', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'harp' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 9),
+            ('214', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'guitar' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 9),
+            ('215', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'flute' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 9),
+            ('216', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'bass drum' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 9),
+            ('217', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'cello' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 9),
+            ('218', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'tuba' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 9),
+            ('219', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'pipe organ' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 9),
+            ('220', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'gong' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 9),
+
+            ('221', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'one' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+            ('222', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'two' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+            ('223', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'three' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+            ('224', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'four' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+            ('225', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'five' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+            ('226', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'six' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+            ('227', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'seven' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+            ('228', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'eight' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+            ('229', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'nine' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+            ('230', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'ten' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+            ('231', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'eleven' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+            ('232', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'twelve' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+            ('233', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'thirteen' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+            ('234', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'fourteen' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+            ('235', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'fifteen' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+            ('236', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'sixteen' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+            ('237', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'seventeen' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+            ('238', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'eighteen' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+            ('239', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'nineteen' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+            ('240', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'twenty' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+            ('241', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'thirty' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+            ('242', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'forty' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+            ('243', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'fifty' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+            ('244', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'sixty' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+            ('245', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'seventy' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+            ('246', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'eighty' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+            ('247', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'ninety' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+            ('248', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'hundred' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+            ('249', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'thousand' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+            ('250', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'million' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+            ('251', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'milliard' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+            ('252', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'trillion' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+            ('253', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'billion' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 10),
+
+            ('254', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'teacher' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+            ('255', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'singer' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+            ('256', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'fireman' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+            ('257', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'dentist' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+            ('258', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'doctor' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+            ('259', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'hairdresser' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+            ('260', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'judge' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+            ('261', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'lawyer' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+            ('262', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'driver' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+            ('263', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'mailman' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+            ('264', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'pilot' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+            ('265', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'air hostess' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+            ('266', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'photographer' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+            ('267', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'mechanic' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+            ('268', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'author' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+            ('269', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'policeman' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+            ('270', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'astronaut' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+            ('271', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'mountaineer' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+            ('272', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'sailor' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+            ('273', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'model' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+            ('274', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'artist' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+            ('275', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'sculptor' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+            ('276', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'cook' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+            ('277', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'shopkeeper' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+            ('278', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'baker' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+            ('279', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'dancer' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+            ('280', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'programmer' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+            ('281', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'builder' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+            ('282', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'stylist' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+            ('283', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'seller' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+            ('284', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'nurse' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+            ('285', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'nanny' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+            ('286', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'electrician' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 11),
+
+            ('287', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'big' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 12),
+            ('288', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'wide' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 12),
+            ('289', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'tall' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 12),
+            ('290', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'fat' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 12),
+            ('291', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'thin' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 12),
+            ('292', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'little' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 12),
+            ('293', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'short' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 12),
+            ('294', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'tiny' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 12),
+            ('295', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'long' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 12),
+
+            ('296', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'great-grandchild' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 13),
+            ('297', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'great-grandfather' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 13),
+            ('298', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'grandmother' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 13),
+            ('299', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'grandfather' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 13),
+            ('300', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'uncle' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 13),
+            ('301', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'aunt' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 13),
+            ('302', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'cousin' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 13),
+            ('303', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'father' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 13),
+            ('304', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'mother' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 13),
+            ('305', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'sister' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 13),
+            ('306', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'brother' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 13),
+
+            ('307', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'hammer' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 14),
+            ('308', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'nail' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 14),
+            ('309', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'screw' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 14),
+            ('310', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'nut' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 14),
+            ('311', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'disc' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 14),
+            ('312', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'bolt' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 14),
+            ('313', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'glue' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 14),
+            ('314', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'sewing-machine' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 14),
+            ('315', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'line' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 14),
+            ('316', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'pencil' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 14),
+            ('317', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'saw' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 14),
+            ('318', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'hacksaw' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 14),
+            ('319', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'screwdriver' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 14),
+            ('320', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'wrench' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 14),
+            ('321', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'drill' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 14),
+            ('322', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'breaker' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 14),
+            ('323', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'soldering-iron' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 14),
+            ('324', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'perforator' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 14),
+            ('325', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'lathe' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 14),
+
+            ('326', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'cucumber' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 15),
+            ('327', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'tomato' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 15),
+            ('328', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'potato' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 15),
+            ('329', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'onion' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 15),
+            ('330', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'garlic' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 15),
+            ('331', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'aubergine' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 15),
+            ('332', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'turnip' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 15),
+            ('333', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'corn' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 15),
+            ('334', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'lettuce' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 15),
+            ('335', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'cabbage' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 15),
+            ('336', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'carrot' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 15),
+            ('337', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'capsicum' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 15),
+            ('338', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'asparagus' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 15),
+            ('339', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'pea' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 15),
+            ('340', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'pumpkin' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 15),
+            ('341', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'bean' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 15),
+            ('342', NULL, '2010-08-24', select id from DICTIONARY_ENTRIES where word = 'lentil' and dictionary_id = (select id from DICTIONARIES where name = 'English-Bulgarian'), 15);
+        </sql>
+    </changeSet>
+    <changeSet id="4" author="bozhidar">
+        <addColumn tableName="DICTIONARY_ENTRIES">
+            <column name="rank" type="int" defaultValue="1">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <dropTable tableName="RANK_ENTRIES"/>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,14 @@
+target
+*.log
+*.log.*
+.classpath
+.project
+.settings
+.wtpmodules
+*.ipr
+*.iws
+*.iml
+nbproject
+local 
+svn-commit.tmp*
+

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>spellbook</artifactId>
+        <groupId>bg.drow.spellbook</groupId>
+        <version>0.4.0-SNAPSHOT</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>bg.drow.spellbook.ui</groupId>
+    <artifactId>spellbook-ui</artifactId>
+
+    <name>Spellbook Dictionary UI</name>
+    <description>The user interface of Spellbook, written in Swing</description>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>bg.drow.spellbook.ui.desktop.SpellbookApp</mainClass>
+                        </manifest>
+                        <manifestEntries>
+                            <SplashScreen-Image>images/spellbook-splash.png</SplashScreen-Image>
+                        </manifestEntries>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.1.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>bg.drow.spellbook.ui.desktop.SpellbookApp</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
+
+    <dependencies>
+        <!-- internal -->
+        <dependency>
+            <groupId>bg.drow.spellbook</groupId>
+            <artifactId>spellbook-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>bg.drow.spellbook</groupId>
+            <artifactId>spellbook-swing</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>bg.drow.spellbook</groupId>
+            <artifactId>spellbook-utils</artifactId>
+        </dependency>
+
+        <!-- external -->
+        <dependency>
+            <groupId>com.jidesoft</groupId>
+            <artifactId>jide-oss</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.miglayout</groupId>
+            <artifactId>miglayout</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.java.balloontip</groupId>
+            <artifactId>balloontip</artifactId>
+        </dependency>
+    </dependencies>
+</project>

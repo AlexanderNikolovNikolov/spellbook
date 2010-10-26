@@ -1,0 +1,5 @@
+﻿;!@Install@!UTF-8!
+Title="Spellbook Desktop Edition"
+BeginPrompt="Do you want to install Spellbook Desktop Edition ?"
+RunProgram="launcher.exe"
+;!@InstallEnd@!

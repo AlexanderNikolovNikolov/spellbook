@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+
+<shortcuts>
+
+    <skipIfNotSupported/>
+
+    <programGroup defaultName="Spellbook" location="applications"/>
+
+      <shortcut
+        type="Application"
+		name="Spellbook Desktop Edition"
+        programGroup="yes"
+        desktop="yes"
+        applications="no"
+        startMenu="yes"
+        startup="no"
+        target="$INSTALL_PATH\spellbook-ui-0.3.0-jar-with-dependencies.jar"
+        description="Spellbook Desktop Edition"
+        iconFile="$INSTALL_PATH\dictionary.png"
+        iconIndex="0"
+        initialState="normal"
+		encoding="UTF-8"
+		terminal="true">
+
+         <createForPack name="Base"/>
+
+       </shortcut>
+ 
+
+    <shortcut
+           name="Spellbook Desktop Edition Uninstaller"
+           programGroup="yes"
+           desktop="no"
+           applications="no"
+           startMenu="no"
+           startup="no"
+           target="/usr/lib/java/bin/java"
+           commandLine="-jar&quot;$INSTALL_PATH/Uninstaller/uninstaller.jar&quot;"
+           iconFile="trashcan_full"
+           iconIndex="0"
+           description="Uninstall Spellbook Desktop Edition"
+		   type="Application"
+           encoding="UTF-8"
+		   initialState="noShow">
+
+        <createForPack name="Base"/>
+    </shortcut>
+
+</shortcuts>
