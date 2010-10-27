@@ -10,5 +10,5 @@ target
 *.iml
 nbproject
 local 
-svn-commit.tmp*
+.idea
 

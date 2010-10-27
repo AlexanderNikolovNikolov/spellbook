@@ -8,7 +8,6 @@ import bg.drow.spellbook.core.model.Language;
 import bg.drow.spellbook.core.model.Version;
 import bg.drow.spellbook.core.preferences.PreferencesManager;
 import bg.drow.spellbook.core.service.DictionaryService;
-import bg.drow.spellbook.core.service.Lookup;
 import bg.drow.spellbook.ui.desktop.exam.ExamDialog;
 import bg.drow.spellbook.ui.desktop.game.HangmanDialog;
 import bg.drow.spellbook.ui.desktop.study.StudyWordsDialog;
@@ -144,9 +143,7 @@ public class SpellbookFrame extends JFrame {
             System.exit(0);
         }
 
-        Lookup.init();
-
-        dictionaryService = Lookup.lookup(DictionaryService.class);
+        dictionaryService = DictionaryService.getInstance();
 
         // if there are no dictionaries - something is wrong with the database
         if (dictionaryService.getDictionaries().size() == 0) {
