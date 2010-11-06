@@ -27,7 +27,7 @@ public class SelectDbDialog extends BaseDialog implements PropertyChangeListener
     private String localDbFolder;
     private JButton okButton = createOkButton();
 
-    private static final String DB_URL = "http://spellbook-dictionary.googlecode.com/files/spellbook-db-0.4.zip";
+    private static final String DB_URL = "https://github.com/downloads/bbatsov/spellbook/spellbook-db-0.4.zip";
     private static final String DOWNLOAD_DIR = System.getProperty("java.io.tmpdir");
     private static final int FONT_SIZE = 14;
     private JLabel localDbFolderValidationLabel;

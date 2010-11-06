@@ -53,7 +53,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class SpellbookFrame extends JFrame {
     public static final Version VERSION = new Version("0.4.0");
-    private static final String VERSION_FILE_URL = "http://spellbook-dictionary.googlecode.com/svn/trunk/desktop/app/spellbook-version.txt";
+    private static final String VERSION_FILE_URL = "https://github.com/bbatsov/spellbook/raw/master/app/spellbook-version.txt";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SpellbookFrame.class);
     private static final Translator TRANSLATOR = Translator.getTranslator("SpellbookFrame");
@@ -1494,7 +1494,7 @@ public class SpellbookFrame extends JFrame {
 
     private void showHelpContents() {
         try {
-            Desktop.getDesktop().browse(new URI(SpellbookConstants.HELP_URL + (Locale.getDefault().getCountry().equals("BG") ? "Bulgarian" : "English")));
+            Desktop.getDesktop().browse(new URI(SpellbookConstants.HELP_URL));// + (Locale.getDefault().getCountry().equals("BG") ? "Bulgarian" : "English")));
         } catch (IOException e) {
             e.printStackTrace();
         } catch (URISyntaxException e) {

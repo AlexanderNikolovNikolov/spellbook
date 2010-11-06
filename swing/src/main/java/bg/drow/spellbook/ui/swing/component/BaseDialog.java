@@ -159,7 +159,7 @@ public abstract class BaseDialog extends StandardDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    Desktop.getDesktop().browse(new URI(SpellbookConstants.HELP_URL + (Locale.getDefault().getCountry().equals("BG") ? "Bulgarian" : "English")));
+                    Desktop.getDesktop().browse(new URI(SpellbookConstants.HELP_URL));// + (Locale.getDefault().getCountry().equals("BG") ? "Bulgarian" : "English")));
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 } catch (URISyntaxException e1) {
