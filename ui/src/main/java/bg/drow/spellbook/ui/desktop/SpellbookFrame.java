@@ -39,7 +39,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Scanner;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -58,6 +57,16 @@ public class SpellbookFrame extends JFrame {
     private static final Logger LOGGER = LoggerFactory.getLogger(SpellbookFrame.class);
     private static final Translator TRANSLATOR = Translator.getTranslator("SpellbookFrame");
     private static final PreferencesManager PM = PreferencesManager.getInstance();
+
+    private static final int DEFAULT_FONT_SIZE = 14;
+    private static final int DIVIDER_LOCATION = 180;
+    private static final int MIN_FRAME_WIDTH = 640;
+    private static final int MIN_FRAME_HEIGHT = 200;
+
+    private static final int BYTES_IN_ONE_MEGABYTE = 1024 * 1024;
+    private static DictionaryService dictionaryService;
+    private static Dictionary selectedDictionary;
+
     private List<String> words;
     private ClipboardIntegration clipboardIntegration;
     private ScheduledExecutorService memoryUsageExecutorService;
@@ -65,9 +74,7 @@ public class SpellbookFrame extends JFrame {
     private boolean exactMatch = false;
     private List<String> searchedWords = Lists.newArrayList();
     private int searchWordsIndex = -1;
-    private static final int BYTES_IN_ONE_MEGABYTE = 1024 * 1024;
-    private static DictionaryService dictionaryService;
-    private static Dictionary selectedDictionary;
+    private boolean initialized = false;
 
     private JButton backButton;
     private JButton clearButton;
@@ -92,11 +99,6 @@ public class SpellbookFrame extends JFrame {
     private JTextPane wordTranslationTextPane;
     private JList wordsList;
     private JLabel wordSearchFieldStatusLabel = new JLabel();
-    private boolean initialized = false;
-    private static final int DEFAULT_FONT_SIZE = 14;
-    private static final int DIVIDER_LOCATION = 180;
-    private static final int MIN_FRAME_WIDTH = 640;
-    private static final int MIN_FRAME_HEIGHT = 200;
     private JToolBar mainToolBar;
     private JPanel statusBar;
     private JLabel dictionaryInfoLabel;
