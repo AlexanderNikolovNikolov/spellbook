@@ -14,6 +14,11 @@ public class Version implements Comparable<Version> {
 
     public Version(String versionString) {
         String[] version = versionString.split("\\.");
+
+        if (version.length != 3) {
+            throw new IllegalArgumentException("Invalid version string format");
+        }
+
         major = Integer.parseInt(version[0]);
         minor = Integer.parseInt(version[1]);
         revision = Integer.parseInt(version[2]);
